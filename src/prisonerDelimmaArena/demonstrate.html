@@ -1,0 +1,131 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>合作博弈演化</title>
+  <script src="./data.js"></script>
+  <style>
+    body {
+      font-family: Arial, sans-serif;
+      padding: 20px;
+    }
+
+    .container {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 20px;
+    }
+
+    .grid {
+      display: grid;
+      grid-template-columns: repeat(10, 40px);
+      grid-template-rows: repeat(10, 40px);
+      gap: 2px;
+      margin-bottom: 20px;
+    }
+
+    .cell {
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      border: 1px solid #ddd;
+      font-size: 24px;
+    }
+
+    .title {
+      text-align: center;
+    }
+
+    .legend {
+      margin-top: 20px;
+      display: flex;
+      gap: 10px;
+      flex-wrap: wrap;
+      text-align: center;
+      align-items: center;
+      justify-content: center;
+      margin: 0 auto;
+    }
+
+    .legend-item {
+      display: flex;
+      align-items: center;
+      gap: 5px;
+    }
+
+    .color-box {
+      width: 20px;
+      height: 20px;
+      border: 1px solid #ddd;
+    }
+  </style>
+</head>
+
+<body>
+  <h1 class="title">合作博弈演化</h1>
+  <div class="container" id="container"></div>
+  <div class="legend" id="legend"></div>
+
+  <script>
+    // 示例数据
+    const colors = [
+      '#C52A4F', '#D0884B', '#F8DC5B',
+      '#69D97D', '#6DE5D0', '#7542C5',
+    ];
+    const legends = [
+      '总是合作', '总是背叛', '随机策略', '一报还一报',
+      '一报还一报加最后一搏',
+    ];
+    let dataArr = data;
+
+    // 初始化
+    function init() {
+      const container = document.getElementById('container');
+      const legend = document.getElementById('legend');
+
+      // 创建图例
+      legends.forEach((l, i) => {
+        const legendItem = document.createElement('div');
+        legendItem.className = 'legend-item';
+        legendItem.innerHTML = `
+                    <div class="color-box" style="background-color: ${colors[i]}"></div>
+                    <span>${l}</span>
+                `;
+        legend.appendChild(legendItem);
+      });
+
+      dataArr.forEach(data => {
+        // 创建网格
+        const grid = document.createElement('div');
+        grid.className = 'grid';
+
+        // 创建小人
+        data.forEach(i => {
+          const cell = document.createElement('div');
+          cell.className = 'cell';
+          cell.style.backgroundColor = colors[i];
+          cell.innerHTML = '&#x1F9CD;'; // 小人Unicode
+          grid.appendChild(cell);
+        });
+
+        container.appendChild(grid);
+      });
+    }
+
+    // 获取随机颜色
+    function getRandomColor() {
+      const letters = '0123456789ABCDEF';
+      let color = '#';
+      for (let i = 0; i < 6; i++) {
+        color += letters[Math.floor(Math.random() * 16)];
+      }
+      return color;
+    }
+
+    window.onload = init;
+  </script>
+</body>
+
+</html>
