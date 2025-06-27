@@ -1,20 +1,18 @@
 import { Developer } from './developer';
 import { Comment } from './comment';
 import { BaseEntity } from './baseEntity';
-import { capabilityValueMap, Difficulty, EntityValue } from './types';
+import { capabilityValueMap, EntityValue } from './types';
 
 const DISSCUSION_RATIO = 3;
 
-export class Issue extends BaseEntity {
+export class Thread extends BaseEntity {
   public isClosed: boolean = false;
-  public needPull: boolean = false;
   public disscusionQuota: number;
   private comments: Comment[] = [];
 
   constructor(
     public id: number,
     author: Developer, createdAt: number, value: EntityValue,
-    public difficulty: Difficulty,
   ) {
     super(author, createdAt, value);
     this.disscusionQuota = capabilityValueMap.get(this.value)! * DISSCUSION_RATIO;
@@ -36,8 +34,8 @@ export class Issue extends BaseEntity {
     return this.comments;
   }
 
-  public getLLMDescription(): string {
-    return `  - Issue #${this.id}: Difficulty: ${this.difficulty}, Need PR: ${this.needPull ? 'Yes' : 'No'}, Author: ${this.author.id}`;
+  public getCost() {
+    return Math.abs(this.getValue() * 2);
   }
 
 }

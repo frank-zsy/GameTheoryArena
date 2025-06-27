@@ -1,5 +1,4 @@
 const dateFormat = require('dateformat');
-import { OpenAI } from 'openai';
 
 const log = (level: string, ...args: any[]) =>
   console.log(`${dateFormat(new Date(), 'yyyy-mm-dd HH:MM:ss')} [${level}] `, ...args);
@@ -10,23 +9,30 @@ export const Logger = {
   error: (...args: any[]) => log('ERROR', ...args),
 }
 
-const openai = new OpenAI({
-  apiKey: process.env.ARK_KEY,
-  baseURL: 'https://ark.cn-beijing.volces.com/api/v3',
-});
+interface RandomPickArg<T> {
+  ratio: number;
+  value: T | (() => T);
+}
 
-export const chat = async (prompt: string, question: string): Promise<string> => {
-  const result = await openai.chat.completions.create({
-    model: 'deepseek-v3-241226',
-    messages: [
-      {
-        role: 'system', content: prompt,
-      },
-      {
-        role: 'user', content: question,
+export const randomPick = <T>(args: Array<RandomPickArg<T>>): T => {
+  const totalRatio = args.map(a => a.ratio).reduce((p, c) => p + c, 0);
+  const ratioArr: number[] = [];
+  for (let i = 0; i < args.length - 1; i++)
+    ratioArr.push((i === 0 ? 0 : ratioArr[i - 1]) + (args[i].ratio * 100 / totalRatio));
+  const rand = Math.random() * 100;
+  for (let i = 0; i < ratioArr.length; i++) {
+    const thredhold = ratioArr[i];
+    if (rand < thredhold) {
+      if (typeof args[i].value === 'function') {
+        return (args[i].value as () => T)();
+      } else {
+        return args[i].value as T;
       }
-    ],
-  });
-  const content = result.choices[0].message.content!;
-  return content;
-};
+    }
+  }
+  if (typeof args[args.length - 1].value === 'function') {
+    return (args[args.length - 1].value as () => T)();
+  } else {
+    return args[args.length - 1].value as T;
+  }
+}

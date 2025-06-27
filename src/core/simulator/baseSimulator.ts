@@ -11,9 +11,9 @@ interface SimulatorConfig {
   steps: number;
 }
 
-export abstract class BaseSimulator {
+export abstract class BaseSimulator<TPlayer extends BasePlayer, TArena extends BaseArena<TPlayer>> {
 
-  protected arena: BaseArena<BasePlayer>;
+  protected arena: TArena;
   protected strategyAdjuster: BaseStrategyAdjuster;
   protected evaluator: BaseEvaluator;
 
@@ -22,7 +22,7 @@ export abstract class BaseSimulator {
     protected config: SimulatorConfig
   ) { }
 
-  public setArena(arena: BaseArena<BasePlayer>): this {
+  public setArena(arena: TArena): this {
     this.arena = arena;
     return this;
   }

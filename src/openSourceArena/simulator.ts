@@ -7,34 +7,35 @@ import { OpenSourceStrategy } from "./strategy/openSourceStrategy";
 
 import { writeFileSync } from "fs";
 import { join } from "path";
+import { Collaborativity, getRandomCapability, getRandomCollaborativity, getRandomMotivation } from "./entity/types";
 import { Logger } from "../utils";
-import { getRandomCapability, getRandomCollaborativity } from "./entity/types";
 
 const strategiesArr: any[] = [];
 
-export class Simulator extends BaseSimulator {
+export class Simulator extends BaseSimulator<Developer, Repository> {
 
   constructor() {
     super('Open Source Arena', {
-      maxRounds: 3,
-      steps: 2,
+      maxRounds: 6,
+      steps: 4,
     });
   }
 
   public async initialize(): Promise<void> {
-    const dev1 = this.generateRandomDeveloper();
-    dev1.setCapability('VERY_HIGH');
-    dev1.motivation = 'NORMAL';
-    dev1.baseCollaborativity = 'LOW';
-    dev1.currentCollaborativity = 'LOW';
-    this.arena.addPlayer(dev1);
-
-    const dev2 = this.generateRandomDeveloper();
-    dev2.setCapability('VERY_HIGH');
-    dev1.motivation = 'NORMAL';
-    dev2.baseCollaborativity = 'HIGH';
-    dev2.currentCollaborativity = 'HIGH';
-    this.arena.addPlayer(dev2);
+    const collaborativity: Collaborativity[] = ['VERY_LOW', 'LOW', 'NORMAL', 'HIGH', 'VERY_HIGH'];
+    // add 5 core maintainers
+    for (let i = 0; i < 5; i++) {
+      const dev = this.generateRandomDeveloper();
+      dev.setCapability('VERY_HIGH');
+      dev.collaborativity = collaborativity[i];
+      dev.motivation = 'NORMAL';
+      this.arena.addPlayer(dev);
+    }
+    // add 95 other developers
+    for (let i = 0; i < 95; i++) {
+      const dev = this.generateRandomDeveloper();
+      this.arena.addPlayer(dev);
+    }
   }
 
   private generateRandomDeveloper(): Developer {
@@ -43,11 +44,8 @@ export class Simulator extends BaseSimulator {
     const developer = new Developer(developerId, `Developer ${developerId}`, s);
     s.developer = developer;
     developer.setCapability(getRandomCapability());
-    if (Math.random() < 0.1) {
-      developer.motivation = 'SPECULATIVE';
-    }
-    developer.baseCollaborativity = getRandomCollaborativity();
-    developer.currentCollaborativity = developer.baseCollaborativity;
+    developer.collaborativity = getRandomCollaborativity();
+    developer.motivation = getRandomMotivation();
     return developer;
   }
 
@@ -55,13 +53,8 @@ export class Simulator extends BaseSimulator {
     strategiesArr.push((this.arena as Repository).getPlayers().map(p => p.strategy.getName()));
   }
 
-  public async postRound(r: number): Promise<void> {
-    Logger.info(`Repository stats after round ${r}:
-      ${(this.arena as Repository).getLLMDescription()}`);
-    this.arena.addPlayer(this.generateRandomDeveloper());
-    if (Math.random() < 0.5) {
-      this.arena.addPlayer(this.generateRandomDeveloper());
-    }
+  public async postRound(_r: number): Promise<void> {
+    Logger.info(this.arena.getDescription());
   }
 
 }

@@ -1,4 +1,4 @@
-export type Difficulty = 'VERY_EASY' | 'EASY' | 'NORMAL' | 'HARD' | 'VERY_HARD';
+import { randomPick } from "../../utils";
 
 export type EntityValue = 'NEGATIVE' | 'VERY_LOW' | 'LOW' | 'NORMAL' | 'HIGH' | 'VERY_HIGH';
 
@@ -17,35 +17,48 @@ export const capabilityValueMap = new Map<Capability | EntityValue, number>([
   ['VERY_HIGH', 5],
 ]);
 
-export const getRandomValue = (capability: Capability): EntityValue => {
-  const capabilities = ['VERY_LOW', 'LOW', 'NORMAL', 'HIGH', 'VERY_HIGH'];
-  const index = capabilities.findIndex(c => c === capability);
-  const i = Math.floor(Math.random() * index);
-  return capabilities[i] as EntityValue;
+export const collaborativityRatio = new Map<Collaborativity, number>([
+  ['VERY_LOW', 10],
+  ['LOW', 30],
+  ['NORMAL', 50],
+  ['HIGH', 70],
+  ['VERY_HIGH', 90],
+]);
+
+export const getRandomValue = (_capability: Capability, motivation: Motivation): EntityValue => {
+  if (motivation === 'SPECULATIVE') return 'NEGATIVE';
+  return randomPick<EntityValue>([
+    { value: 'VERY_LOW', ratio: 1 },
+    { value: 'LOW', ratio: 1 },
+    { value: 'NORMAL', ratio: 1 },
+    { value: 'HIGH', ratio: 1 },
+    { value: 'VERY_HIGH', ratio: 1 },
+  ]);
 };
 
 export const getRandomCapability = (): Capability => {
-  const capabilities: Capability[] = ['VERY_LOW', 'LOW', 'NORMAL', 'HIGH', 'VERY_HIGH'];
-  const ratios = [20, 65, 80, 90, 100];
-  const rand = Math.random() * 100;
-  for (let i = 0; i < ratios.length; i++) {
-    const thredhold = ratios[i];
-    if (rand < thredhold) {
-      return capabilities[i];
-    }
-  }
-  return 'VERY_LOW';
-}
+  return randomPick<Capability>([
+    { value: 'VERY_LOW', ratio: 20 },
+    { value: 'LOW', ratio: 25 },
+    { value: 'NORMAL', ratio: 30 },
+    { value: 'HIGH', ratio: 15 },
+    { value: 'VERY_HIGH', ratio: 10 },
+  ]);
+};
 
 export const getRandomCollaborativity = (): Collaborativity => {
-  const collaborativities: Collaborativity[] = ['VERY_LOW', 'LOW', 'NORMAL', 'HIGH', 'VERY_HIGH'];
-  const ratios = [10, 30, 70, 90, 100];
-  const rand = Math.random() * 100;
-  for (let i = 0; i < ratios.length; i++) {
-    const thredhold = ratios[i];
-    if (rand < thredhold) {
-      return collaborativities[i];
-    }
-  }
-  return 'VERY_LOW';
-}
+  return randomPick<Collaborativity>([
+    { value: 'VERY_LOW', ratio: 10 },
+    { value: 'LOW', ratio: 20 },
+    { value: 'NORMAL', ratio: 40 },
+    { value: 'HIGH', ratio: 20 },
+    { value: 'VERY_HIGH', ratio: 10 },
+  ]);
+};
+
+export const getRandomMotivation = (): Motivation => {
+  return randomPick<Motivation>([
+    { value: 'NORMAL', ratio: 90 },
+    { value: 'SPECULATIVE', ratio: 10 },
+  ]);
+};

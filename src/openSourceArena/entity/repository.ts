@@ -1,12 +1,9 @@
-import { Issue } from './issue';
-import { PullRequest } from './pullRequest';
+import { Thread } from './thread';
 import { Developer } from './developer';
 import { BaseArena } from '../../core/entity/baseArena';
-import { EOL } from 'os';
 
 export class Repository extends BaseArena<Developer> {
-  private issues: Issue[] = [];
-  private pullRequests: PullRequest[] = [];
+  private threads: Thread[] = [];
 
   constructor(
     public name: string
@@ -14,36 +11,22 @@ export class Repository extends BaseArena<Developer> {
     super(name);
   }
 
-  public addIssue(issue: Issue): void {
-    this.issues.push(issue);
+  public addThread(issue: Thread): void {
+    this.threads.push(issue);
   }
 
-  public addPullRequest(pullRequest: PullRequest): void {
-    this.pullRequests.push(pullRequest);
+
+  public getThreads(): Thread[] {
+    return this.threads;
   }
 
-  public getIssues(): Issue[] {
-    return this.issues;
+  public getOpenThreads(): Thread[] {
+    return this.threads.filter(i => !i.isClosed);
   }
 
-  public getOpenIssues(): Issue[] {
-    return this.issues.filter(i => !i.isClosed);
-  }
-
-  public getPullRequests(): PullRequest[] {
-    return this.pullRequests;
-  }
-
-  public getOpenPullRequest(): PullRequest[] {
-    return this.pullRequests.filter(p => !p.isClosed);
-  }
-
-  public getLLMDescription(): string {
+  public getDescription(): string {
     return `
-- Issues:
-${this.issues.filter(i => !i.isClosed).map(i => i.getLLMDescription()).join(EOL)}
-- PRs:
-${this.pullRequests.filter(i => !i.isClosed).map(i => i.getLLMDescription()).join(EOL)}
+- Threads: ${this.threads.filter(i => !i.isClosed).length} / ${this.threads.length}
     `;
   }
 

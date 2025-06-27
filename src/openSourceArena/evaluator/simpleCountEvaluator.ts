@@ -12,18 +12,11 @@ export class SimpleCountEvaluator extends BaseEvaluator {
     const developerAddCount = (developer: Developer) => {
       developer.performance.set(round, (developer.performance.get(round) ?? 0) + 1);
     };
-    const issues = repository.getIssues();
+    const issues = repository.getThreads();
     issues.forEach(issue => {
       if (issue.createdAt === round) developerAddCount(issue.author);
       issue.getComments().forEach(c => {
         if (c.createdAt === round) developerAddCount(c.author);
-      });
-    });
-    const prs = repository.getPullRequests();
-    prs.forEach(pr => {
-      if (pr.createdAt === round) developerAddCount(pr.author);
-      pr.getReviewComments().forEach(r => {
-        if (r.createdAt === round) developerAddCount(r.author);
       });
     });
   }

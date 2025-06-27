@@ -1,9 +1,8 @@
 import { Repository } from './entity/repository';
 import { Developer } from './entity/developer';
-import { Issue } from './entity/issue';
+import { Thread } from './entity/thread';
 import { Comment } from './entity/comment';
 import { PassiveStrategy } from '../core/strategy/passiveStrategy';
-import { PullRequest } from './entity/pullRequest';
 
 // create repo
 const repo = new Repository('GameTheoryArena');
@@ -17,21 +16,13 @@ repo.addPlayer(dev1);
 repo.addPlayer(dev2);
 
 // open issue
-const issue = new Issue(1, dev1, 0, 'HIGH', 'NORMAL');
-repo.addIssue(issue);
+const thread = new Thread(1, dev1, 0, 'HIGH');
+repo.addThread(thread);
 
 // add comment
-issue.addComment(new Comment(1, dev2, 0, 'LOW'));
-
-// open pr
-const pr = new PullRequest(2, dev1, 1, 'VERY_HIGH');
-repo.addPullRequest(pr);
-
-// add review comment
-pr.addReviewComment(new Comment(2, dev2, 1, 'HIGH'));
+thread.addComment(new Comment(1, dev2, 0, 'LOW'));
 
 // check repo status
-console.log('Open Issues:', repo.getIssues().length);
+console.log('Open Threads:', repo.getThreads().length);
 console.log('Developers:', repo.getPlayers().length);
-console.log('Issue Comments:', issue.getComments().length);
-console.log('PR Review Comments:', pr.getReviewComments().length);
+console.log('Thread Comments:', thread.getComments().length);

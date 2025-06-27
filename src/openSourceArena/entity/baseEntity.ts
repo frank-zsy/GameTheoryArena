@@ -1,6 +1,6 @@
 import { Developer } from "./developer";
 import { Reaction } from "./reaction";
-import { EntityValue } from "./types";
+import { capabilityValueMap, EntityValue } from "./types";
 
 export class BaseEntity {
 
@@ -19,5 +19,13 @@ export class BaseEntity {
 
   public getReactions() {
     return this.reactions;
+  }
+
+  public getValue() {
+    return capabilityValueMap.get(this.value)!;
+  }
+
+  public getCost() {
+    return Math.abs(this.getValue());
   }
 }
