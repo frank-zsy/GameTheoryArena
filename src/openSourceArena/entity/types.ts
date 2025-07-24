@@ -1,4 +1,4 @@
-import { randomPick } from "../../utils";
+import { randomPick } from "../../utils/utils";
 
 export type EntityValue = 'NEGATIVE' | 'VERY_LOW' | 'LOW' | 'NORMAL' | 'HIGH' | 'VERY_HIGH';
 
@@ -62,3 +62,14 @@ export const getRandomMotivation = (): Motivation => {
     { value: 'SPECULATIVE', ratio: 10 },
   ]);
 };
+
+export const collaborativityCompatible = (c1: Collaborativity, c2: Collaborativity): boolean => {
+  const compatibleMap = new Map<Collaborativity, Set<Collaborativity>>([
+    ['VERY_LOW', new Set(['VERY_LOW', 'LOW'])],
+    ['LOW', new Set(['VERY_LOW', 'LOW', 'NORMAL'])],
+    ['NORMAL', new Set(['LOW', 'NORMAL', 'HIGH'])],
+    ['HIGH', new Set(['NORMAL', 'HIGH', 'VERY_HIGH'])],
+    ['VERY_HIGH', new Set(['HIGH', 'VERY_HIGH'])],
+  ]);
+  return compatibleMap.get(c1)?.has(c2) ?? false;
+}

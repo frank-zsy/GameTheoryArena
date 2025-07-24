@@ -1,4 +1,4 @@
-import { Logger } from "../../utils";
+import { Logger } from "../../utils/utils";
 import { BaseArena } from "../entity/baseArena";
 import { BasePlayer } from "../entity/basePlayer";
 import { BaseEvaluator } from "../evaluator/baseEvaluator";
@@ -16,11 +16,14 @@ export abstract class BaseSimulator<TPlayer extends BasePlayer, TArena extends B
   protected arena: TArena;
   protected strategyAdjuster: BaseStrategyAdjuster;
   protected evaluator: BaseEvaluator;
+  protected initialized: boolean;
 
   constructor(
     public name: string,
     protected config: SimulatorConfig
-  ) { }
+  ) {
+    this.initialized = false;
+  }
 
   public setArena(arena: TArena): this {
     this.arena = arena;
@@ -47,8 +50,9 @@ export abstract class BaseSimulator<TPlayer extends BasePlayer, TArena extends B
       return;
     }
     await this.initialize();
+    this.initialized = true;
     for (let r = 1; r <= this.config.maxRounds; r++) {
-      await this.stats(r);
+      // await this.stats(r);
       await this.preRound(r);
       for (let s = 1; s <= this.config.steps; s++) {
         for (const p of this.arena.getPlayers()) {
@@ -62,7 +66,7 @@ export abstract class BaseSimulator<TPlayer extends BasePlayer, TArena extends B
     }
   }
 
-  private async stats(round: number) {
+  protected async stats(round: number) {
     const strategyCountMap = new Map<string, number>();
     this.arena.getPlayers().forEach(p => {
       strategyCountMap.set(p.strategy.getName(), (strategyCountMap.get(p.strategy.getName()) ?? 0) + 1);

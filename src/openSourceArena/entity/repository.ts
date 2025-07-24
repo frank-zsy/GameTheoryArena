@@ -11,10 +11,9 @@ export class Repository extends BaseArena<Developer> {
     super(name);
   }
 
-  public addThread(issue: Thread): void {
-    this.threads.push(issue);
+  public addThread(thread: Thread): void {
+    this.threads.push(thread);
   }
-
 
   public getThreads(): Thread[] {
     return this.threads;

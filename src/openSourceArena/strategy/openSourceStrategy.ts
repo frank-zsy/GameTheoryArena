@@ -1,5 +1,5 @@
 import { BaseStrategy } from "../../core/strategy/baseStrategy";
-import { randomPick } from "../../utils";
+import { randomPick } from "../../utils/utils";
 import { Comment } from "../entity/comment";
 import { Developer } from "../entity/developer";
 import { Repository } from "../entity/repository";
@@ -21,6 +21,7 @@ export class OpenSourceStrategy extends BaseStrategy {
   public async execute(developer: Developer, repository: Repository, round: number, _step: number): Promise<void> {
     let quota = developer.actionQuota;
     const threadsSet = new Set(repository.getOpenThreads());
+    let totalCost = 0;
     do {
       if (threadsSet.size === 0) {
         // no open threads, need to open a new one
@@ -32,6 +33,7 @@ export class OpenSourceStrategy extends BaseStrategy {
         );
         repository.addThread(thread);
         quota -= thread.getCost();
+        totalCost += thread.getCost();
       } else {
         // has open threads, need to determine to participant into a thread or open a new one
         const collaborateRatio = collaborativityRatio.get(developer.collaborativity)!;
@@ -51,7 +53,9 @@ export class OpenSourceStrategy extends BaseStrategy {
                 getRandomValue(developer.capability, developer.motivation)
               );
               thread.addComment(comment);
+              threadsSet.delete(thread);
               quota -= comment.getCost();
+              totalCost += comment.getCost();
             }
           },
           {
@@ -66,11 +70,13 @@ export class OpenSourceStrategy extends BaseStrategy {
               );
               repository.addThread(thread);
               quota -= thread.getCost();
+              totalCost += thread.getCost();
             }
           },
         ]);
       }
     } while (quota >= 0)
+    developer.costMap.set(round, (developer.costMap.get(round) ?? 0) + totalCost);
   }
 
 }

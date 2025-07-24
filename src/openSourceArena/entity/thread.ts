@@ -1,9 +1,9 @@
 import { Developer } from './developer';
 import { Comment } from './comment';
 import { BaseEntity } from './baseEntity';
-import { capabilityValueMap, EntityValue } from './types';
+import { EntityValue } from './types';
 
-const DISSCUSION_RATIO = 3;
+const DISSCUSION_RATIO = 1;
 
 export class Thread extends BaseEntity {
   public isClosed: boolean = false;
@@ -15,7 +15,7 @@ export class Thread extends BaseEntity {
     author: Developer, createdAt: number, value: EntityValue,
   ) {
     super(author, createdAt, value);
-    this.disscusionQuota = capabilityValueMap.get(this.value)! * DISSCUSION_RATIO;
+    this.disscusionQuota = this.getCost() * DISSCUSION_RATIO;
   }
 
   public close(): void {
@@ -24,7 +24,7 @@ export class Thread extends BaseEntity {
 
   public addComment(comment: Comment): void {
     this.comments.push(comment);
-    this.disscusionQuota -= capabilityValueMap.get(comment.value)!;
+    this.disscusionQuota -= comment.getCost();
     if (this.disscusionQuota <= 0) {
       this.isClosed = true;
     }
@@ -34,8 +34,12 @@ export class Thread extends BaseEntity {
     return this.comments;
   }
 
+  public getValue() {
+    return super.getValue() * 2;
+  }
+
   public getCost() {
-    return Math.abs(this.getValue() * 2);
+    return Math.abs(this.getValue());
   }
 
 }

@@ -2,7 +2,7 @@ import { BasePlayer } from '../../core/entity/basePlayer';
 import { BaseStrategy } from '../../core/strategy/baseStrategy';
 import { Capability, capabilityValueMap, Collaborativity, Motivation } from './types';
 
-const ACTION_QUOTA_RATIO = 5;
+const ACTION_QUOTA_RATIO = 3;
 
 export class Developer extends BasePlayer {
 
@@ -11,6 +11,7 @@ export class Developer extends BasePlayer {
   public collaborativity: Collaborativity;
   public relationships: Map<number, number>;
   public motivation: Motivation;
+  public costMap: Map<number, number>;
 
   constructor(
     public id: number,
@@ -22,6 +23,7 @@ export class Developer extends BasePlayer {
     this.relationships = new Map<number, number>();
     this.collaborativity = 'NORMAL';
     this.motivation = 'NORMAL';
+    this.costMap = new Map<number, number>();
   }
 
   public setCapability(c: Capability) {
@@ -32,7 +34,6 @@ export class Developer extends BasePlayer {
   public getLLMDescription(): string {
     return `  - Capability: ${this.capability}
   - Motivation: ${this.motivation}
-  - Relationship with Authors: Strong with 2, Weak with 3, Moderate with 1
   - Collaborativity: ${this.collaborativity}
     `;
   }

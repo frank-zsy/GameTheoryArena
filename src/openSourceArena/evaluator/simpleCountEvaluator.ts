@@ -19,6 +19,9 @@ export class SimpleCountEvaluator extends BaseEvaluator {
         if (c.createdAt === round) developerAddCount(c.author);
       });
     });
+    repository.getPlayers().forEach(p => {
+      p.performance.set(round, p.performance.get(round)! / p.costMap.get(round)!);
+    });
   }
 
 }
