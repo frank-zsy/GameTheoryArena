@@ -10,7 +10,7 @@ import { join } from "path";
 const strategiesArr: any[] = [];
 const PLAY_RATIO = 0.05;
 
-export class Simulator extends BaseSimulator {
+export class Simulator extends BaseSimulator<Player, Arena> {
 
   constructor() {
     super('Prisoner\'s delimma arena', {
